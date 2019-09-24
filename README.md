@@ -1,5 +1,5 @@
 # clop
-A generic interface to Open Computing Language for Csound
+A generic interface to the Open Computing Language for Csound
 
 This repository attempts to provide an interface to OpenCL for Csound in the form of a suite of opcodes.
 It is based on a C++ wrapper class that exposes the relevant OpenCL API functionality and CPOF (using the latest code from 
