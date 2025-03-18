@@ -1,12 +1,5 @@
 #include "ocl.h"
-#ifdef __MACH__
-#include <CsoundLib64/modload.h>
-#else
-#include <csound/modload.h>
-#endif
-
-
-#include <CsoundLib64/modload.h>
+#include <modload.h>
 
 #define MAXARGS 64
 namespace csnd {
