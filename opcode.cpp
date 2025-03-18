@@ -1,10 +1,14 @@
 #include "ocl.h"
-#include <plugin.h>
-#include <modload.h>
+#ifdef __MACH__
+#include <CsoundLib64/modload.h>
+#else
+#include <csound/modload.h>
+#endif
+
+
+#include <CsoundLib64/modload.h>
 
 #define MAXARGS 64
-
-
 namespace csnd {
 
   void err_msg(std::string s, void *uData) {
@@ -66,7 +70,7 @@ namespace csnd {
         for(int i = arrays+3; i < numin+numout; i++) 
           if(is_audio[i]) 
             ocl->alloc(arrays++, sizeof(MYFLT)*ksmps());
-        csound->plugin_deinit(this);
+  
         return OK;
       }
       return csound->init_error("failed to setup OpenCL!\n");
@@ -165,7 +169,7 @@ namespace csnd {
         for(int i = arrays+3; i < numin+numout; i++) 
           if(is_audio[i]) 
             ocl->alloc(arrays++, sizeof(float)*ksmps());
-        csound->plugin_deinit(this);
+        
         cvt.allocate(csound, ksmps());
         return OK;
       }
