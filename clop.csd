@@ -34,7 +34,7 @@ kernel void process(global double *out, global const double *in) {
   }
 }}
 
-idev = 
+idev = 0
 ain oscil 0.5, 440
 asig clopd Skerneld, idev, ksmps, ain
   out asig
