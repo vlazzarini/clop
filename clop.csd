@@ -34,7 +34,7 @@ kernel void process(global double *out, global const double *in) {
   }
 }}
 
-idev = 0
+idev = 
 ain oscil 0.5, 440
 asig clopd Skerneld, idev, ksmps, ain
   out asig
@@ -43,7 +43,6 @@ endin
 
 </CsInstruments>
 <CsScore>
-i1 0 10
-i2 10 10
+i1 0 1
 </CsScore>
 </CsoundSynthesizer>

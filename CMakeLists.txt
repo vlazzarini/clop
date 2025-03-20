@@ -11,15 +11,17 @@ endif()
 set(SRCS opcode.cpp)
 find_package(OpenCL REQUIRED)
 
-add_library(libclop SHARED ${SRCS})
+add_library(clop SHARED ${SRCS})
 
 if(APPLE)
-target_link_libraries(libclop "-framework OpenCL")
+target_link_libraries(clop "-framework OpenCL")
 else()
-target_link_libraries(libclop OpenCL)
+target_link_libraries(clop OpenCL)
 endif()
 
-target_include_directories(libclop PRIVATE ${CSOUND_INCLUDE_DIR} ${CMAKE_SOURCE_DIR})
-set_property(TARGET libclop PROPERTY CXX_STANDARD 14)
+target_include_directories(clop PRIVATE ${CSOUND_INCLUDE_DIR}
+${CMAKE_SOURCE_DIR})
+message(STATUS ${CSOUND_INCLUDE_DIR})
+set_property(TARGET clop PROPERTY CXX_STANDARD 14)
 
 

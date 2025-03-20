@@ -190,7 +190,7 @@ namespace csnd {
           AudioSig asig(this, args(i));
           int j = offset;
           for(auto &k : cvt) k = asig[j++];
-            ocl->setArg(0, cvt.data() + offset, nsmps, arrays++, nargs++);
+          ocl->setArg(0, cvt.data() + offset, nsmps, arrays++, nargs++);
         }
         else {
           ocl->setArg(0, (float) args[i], nargs++);
