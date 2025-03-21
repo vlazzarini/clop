@@ -4,6 +4,21 @@
 #define MAXARGS 64
 namespace csnd {
 
+  bool is_array(Csound *cs, void *arg) {
+    CSOUND *csound = cs->get_csound();
+    return IS_ARRAY_ARG(arg);
+  }
+
+  bool is_ksig(Csound *cs, void *arg) {
+    CSOUND *csound = cs->get_csound();
+    return IS_KSIG_ARG(arg);
+  }
+
+  bool is_iarg(Csound *cs, void *arg) {
+    CSOUND *csound = cs->get_csound();
+    return IS_INIT_ARG(arg);
+  }
+  
   void err_msg(std::string s, void *uData) {
     Csound *cs = (Csound *)uData;
     cs->message(s);
@@ -157,11 +172,21 @@ namespace csnd {
         for(int i = 0; i < numout; i++) 
           if(is_audio[i]) 
             ocl->alloc(arrays++, sizeof(float)*ksmps());
-          else
+          else if(is_array(csound, args(i))) {
+            Vector<MYFLT> &arr = args.vector_data<MYFLT>(i);
+            ocl->alloc(arrays++, sizeof(float)*arr.len());
+          }
+          else if(is_ksig(csound, args(i))) 
             ocl->alloc(arrays++, sizeof(float));
+          else csound->init_error("Only a, k, or k[] types allowed for output.");
+        
         for(int i = arrays+3; i < numin+numout; i++) 
           if(is_audio[i]) 
             ocl->alloc(arrays++, sizeof(float)*ksmps());
+          else if(is_array(csound, args(i))) {
+            Vector<MYFLT> &arr = args.vector_data<MYFLT>(i);
+            ocl->alloc(arrays++, sizeof(float)*arr.len());
+          }
         
         cvt.allocate(csound, ksmps());
         return OK;
@@ -193,7 +218,15 @@ namespace csnd {
           ocl->setArg(0, cvt.data() + offset, nsmps, arrays++, nargs++);
         }
         else {
-          ocl->setArg(0, (float) args[i], nargs++);
+          MYFLT *x = args(i);
+          if(is_array(csound, x)) {
+            int j = 0;
+            Vector<MYFLT> &arr = args.vector_data<MYFLT>(i);
+            for(auto &k : cvt) k = arr[j++];
+            ocl->setArg(0, cvt.data(), arr.len(), arrays++, nargs++);      
+          }
+          else if(is_ksig(csound, x) || is_iarg(csound, x))
+            ocl->setArg(0, (float) args[i], nargs++);
         }
 
       err = ocl->execute(0, threads);
@@ -209,9 +242,17 @@ namespace csnd {
           for(auto &k : asig) k = cvt[j++];      
         }
         else {
+          MYFLT *x = args(i);
+          if(is_array(csound,x)) {
+            int j = 0;
+            Vector<MYFLT> &arr = args.vector_data<MYFLT>(i);
+            ocl->getData(cvt.data() + offset, arr.len(), arrays++);
+            for(auto &k : cvt) k = cvt[j++];   
+          } else {
           float val;
           ocl->getData(&val, 1, arrays++);
           args[i] = val;
+          }
         }     
       return OK;
     }
@@ -220,8 +261,8 @@ namespace csnd {
 
 
   void on_load(Csound *csound) {
-    plugin<Clopd>(csound, "clopd", "*", "SikM", csnd::thread::ia);
-    plugin<Clopf>(csound, "clopf", "*", "SikM", csnd::thread::ia);
+    plugin<Clopd>(csound, "clopd", "*", "Sik*", csnd::thread::ia);
+    plugin<Clopf>(csound, "clopf", "*", "Sik*", csnd::thread::ia);
   }
   
 }

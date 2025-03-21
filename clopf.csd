@@ -5,8 +5,6 @@
 <CsInstruments>
 
 ksmps = 64
-0dbfs = 1
-
 kernel@global:S = {{
    kernel void process(global float *out, 
 	global const float *in) {
